@@ -1,6 +1,7 @@
 package encoder
 
 import (
+	"errors"
 	"reflect"
 
 	"github.com/penril0326/myMessagePack/internal/definition"
@@ -37,6 +38,15 @@ func (e *encoder) encode(jsonData interface{}) ([]byte, error) {
 	case reflect.String:
 		v := rv.String()
 		e.writeStrDate(v, e.calculateStrSize(v))
+	case reflect.Float32:
+		e.writeFloat32Data(rv.Float(), e.calculateFloat32Size())
+	case reflect.Float64:
+		e.writeFloat64Data(rv.Float(), e.calculateFloat64Size())
+	case reflect.Pointer:
+	case reflect.Invalid:
+		e.data = append(e.data, definition.Nil)
+	default:
+		return nil, errors.New("type not support")
 	}
 
 	return e.data, nil

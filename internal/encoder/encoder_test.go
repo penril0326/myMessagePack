@@ -1,6 +1,7 @@
 package encoder
 
 import (
+	"math"
 	"reflect"
 	"testing"
 )
@@ -312,6 +313,152 @@ func TestInt(t *testing.T) {
 				jsonData: -9223372036854775808,
 			},
 			want:    []byte{0xd3, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := JsonToMsgPack(tt.args.jsonData)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("JsonToMsgPack() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("JsonToMsgPack() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestFloat32(t *testing.T) {
+	type args struct {
+		jsonData interface{}
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []byte
+		wantErr bool
+	}{
+		{
+			name: "float32: 1",
+			args: args{
+				jsonData: float32(1.5),
+			},
+			want:    []byte{0xca, 0x3f, 0xc0, 0x00, 0x00},
+			wantErr: false,
+		},
+		{
+			name: "float32: 2",
+			args: args{
+				jsonData: float32(1.1),
+			},
+			want:    []byte{0xca, 0x3f, 0x8c, 0xcc, 0xcd},
+			wantErr: false,
+		},
+		{
+			name: "float32: 3",
+			args: args{
+				jsonData: float32(math.MaxFloat32),
+			},
+			want:    []byte{0xca, 0x7f, 0x7f, 0xff, 0xff},
+			wantErr: false,
+		},
+		{
+			name: "float32: 4",
+			args: args{
+				jsonData: float32(-0.123454321),
+			},
+			want:    []byte{0xca, 0xbd, 0xfc, 0xd5, 0x9e},
+			wantErr: false,
+		},
+		{
+			name: "float32: 5",
+			args: args{
+				jsonData: float32(math.SmallestNonzeroFloat32),
+			},
+			want:    []byte{0xca, 0x00, 0x00, 0x00, 0x01},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := JsonToMsgPack(tt.args.jsonData)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("JsonToMsgPack() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("JsonToMsgPack() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestFloat64(t *testing.T) {
+	type args struct {
+		jsonData interface{}
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []byte
+		wantErr bool
+	}{
+		{
+			name: "float64: 1",
+			args: args{
+				jsonData: float64(1.5),
+			},
+			want:    []byte{0xcb, 0x3f, 0xf8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+			wantErr: false,
+		},
+		{
+			name: "float64: 2",
+			args: args{
+				jsonData: float64(math.MaxFloat64),
+			},
+			want:    []byte{0xcb, 0x7f, 0xef, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff},
+			wantErr: false,
+		},
+		{
+			name: "float64: 3",
+			args: args{
+				jsonData: float64(math.MaxFloat32),
+			},
+			want:    []byte{0xcb, 0x47, 0xef, 0xff, 0xff, 0xe0, 0x00, 0x00, 0x00},
+			wantErr: false,
+		},
+		{
+			name: "float64: 4",
+			args: args{
+				jsonData: float64(math.SmallestNonzeroFloat64),
+			},
+			want:    []byte{0xcb, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01},
+			wantErr: false,
+		},
+		{
+			name: "float64: 5",
+			args: args{
+				jsonData: float64(-0.01234567654321),
+			},
+			want:    []byte{0xcb, 0xbf, 0x89, 0x48, 0xb0, 0xa8, 0x00, 0x2a, 0x9d},
+			wantErr: false,
+		},
+		{
+			name: "float64: 6",
+			args: args{
+				jsonData: -0.88888888,
+			},
+			want:    []byte{0xcb, 0xbf, 0xec, 0x71, 0xc7, 0x17, 0xac, 0x19, 0x23},
+			wantErr: false,
+		},
+		{
+			name: "float64: 7",
+			args: args{
+				jsonData: math.MaxFloat32,
+			},
+			want:    []byte{0xcb, 0x47, 0xef, 0xff, 0xff, 0xe0, 0x00, 0x00, 0x00},
 			wantErr: false,
 		},
 	}

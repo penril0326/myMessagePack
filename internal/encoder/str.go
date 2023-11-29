@@ -22,11 +22,11 @@ func (e *encoder) calculateStrSize(val string) int {
 	return extraSize
 }
 
-func (e *encoder) writeStrDate(value string, size int) {
+func (e *encoder) writeStrDate(val string, size int) {
 	bytedata := make([]byte, size+1)
-	length := len(value)
+	length := len(val)
 	if length < 32 {
-		bytedata[0] = byte(0xa0 + len(value))
+		bytedata[0] = byte(0xa0 + len(val))
 	} else if length <= math.MaxUint8 {
 		bytedata[0] = definition.Str8
 		bytedata[1] = byte(length)
@@ -43,5 +43,5 @@ func (e *encoder) writeStrDate(value string, size int) {
 	}
 
 	e.data = append(e.data, bytedata...)
-	e.data = append(e.data, []byte(value)...)
+	e.data = append(e.data, []byte(val)...)
 }
