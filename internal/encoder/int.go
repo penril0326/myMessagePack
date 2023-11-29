@@ -2,59 +2,75 @@ package encoder
 
 import (
 	"math"
-	"reflect"
 
 	"github.com/penril0326/myMessagePack/internal/definition"
 )
 
-func (e *encoder) calculateIntSize(rv reflect.Value) {
-	v := rv.Int()
+const (
+	NegativeFixIntMin = -32 // 0xe0
+	NegativeFixIntMax = -1  // 0xff
+)
+
+func (e *encoder) calculateIntSize(val int64) int {
 	size := 0
-	if v >= 0 {
+	if isUnsigned(val) {
 		// do nothing
-	} else if v <= math.MaxInt8 {
+	} else if isNegativeFixInt(val) {
+		// do nothing
+	} else if val >= math.MinInt8 {
 		size = 1
-	} else if v <= math.MaxUint16 {
+	} else if val >= math.MinInt16 {
 		size = 2
-	} else if v <= math.MaxUint32 {
+	} else if val >= math.MinInt32 {
 		size = 4
-	} else { // uint64 or uint
+	} else {
+		// int64 or int
 		size = 8
 	}
 
-	e.writeIntDate(v, size)
+	return size
 }
 
-func (e *encoder) writeIntDate(value int64, size int) {
-	// size+1 for the type
+func (e *encoder) writeIntDate(val int64, size int) {
 	byteData := make([]byte, size+1)
-	if value <= math.MaxInt8 {
-		// positive fixint, no need to append type
-		byteData[0] = byte(value)
-	} else if value <= math.MaxUint8 {
-		byteData[0] = definition.Uint8
-		byteData[1] = byte(value)
-	} else if value <= math.MaxUint16 {
-		byteData[0] = definition.Uint16
-		byteData[1] = byte(value >> 8)
-		byteData[2] = byte(value)
-	} else if value <= math.MaxUint32 {
-		byteData[0] = definition.Uint32
-		byteData[1] = byte(value >> 24)
-		byteData[2] = byte(value >> 16)
-		byteData[3] = byte(value >> 8)
-		byteData[4] = byte(value)
+	if isUnsigned(val) {
+		e.writeUintDate(uint64(val), e.calculateUintSize(uint64(val)))
+		return
+	} else if isNegativeFixInt(val) {
+		// negative fix int, format directly
+		byteData[0] = byte(val)
+	} else if val >= math.MinInt8 {
+		byteData[0] = definition.Int8
+		byteData[1] = byte(val)
+	} else if val >= math.MinInt16 {
+		byteData[0] = definition.Int16
+		byteData[1] = byte(val >> 8)
+		byteData[2] = byte(val)
+	} else if val >= math.MinInt32 {
+		byteData[0] = definition.Int32
+		byteData[1] = byte(val >> 24)
+		byteData[2] = byte(val >> 16)
+		byteData[3] = byte(val >> 8)
+		byteData[4] = byte(val)
 	} else {
-		byteData[0] = definition.Uint64
-		byteData[1] = byte(value >> 56)
-		byteData[2] = byte(value >> 48)
-		byteData[3] = byte(value >> 40)
-		byteData[4] = byte(value >> 32)
-		byteData[5] = byte(value >> 24)
-		byteData[6] = byte(value >> 16)
-		byteData[7] = byte(value >> 8)
-		byteData[8] = byte(value)
+		byteData[0] = definition.Int64
+		byteData[1] = byte(val >> 56)
+		byteData[2] = byte(val >> 48)
+		byteData[3] = byte(val >> 40)
+		byteData[4] = byte(val >> 32)
+		byteData[5] = byte(val >> 24)
+		byteData[6] = byte(val >> 16)
+		byteData[7] = byte(val >> 8)
+		byteData[8] = byte(val)
 	}
 
 	e.data = append(e.data, byteData...)
+}
+
+func isNegativeFixInt(val int64) bool {
+	return (val >= NegativeFixIntMin) && (val <= NegativeFixIntMax)
+}
+
+func isUnsigned(val int64) bool {
+	return val >= 0
 }

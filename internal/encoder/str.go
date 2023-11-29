@@ -2,17 +2,15 @@ package encoder
 
 import (
 	"math"
-	"reflect"
 
 	"github.com/penril0326/myMessagePack/internal/definition"
 )
 
-func (e *encoder) calculateStrSize(rv reflect.Value) int {
-	v := rv.String()
-	length := len(v)
+func (e *encoder) calculateStrSize(val string) int {
+	length := len(val)
 	extraSize := 0
 	if length < 32 {
-
+		// do nothing
 	} else if length <= math.MaxUint8 {
 		extraSize += 1
 	} else if length <= math.MaxUint16 {

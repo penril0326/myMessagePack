@@ -26,13 +26,17 @@ func (e *encoder) encode(jsonData interface{}) ([]byte, error) {
 	rv := reflect.ValueOf(jsonData)
 	switch rv.Kind() {
 	case reflect.Bool:
-		e.writeBoolData(rv.Bool())
+		v := rv.Bool()
+		e.writeBoolData(v)
 	case reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uint:
-		e.writeUintDate(rv.Uint(), e.calculateUintSize(rv))
+		v := rv.Uint()
+		e.writeUintDate(v, e.calculateUintSize(v))
 	case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Int:
-		e.calculateIntSize(rv)
+		v := rv.Int()
+		e.writeIntDate(v, e.calculateIntSize(v))
 	case reflect.String:
-		e.writeStrDate(rv.String(), e.calculateStrSize(rv))
+		v := rv.String()
+		e.writeStrDate(v, e.calculateStrSize(v))
 	}
 
 	return e.data, nil

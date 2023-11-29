@@ -90,7 +90,7 @@ func TestUint(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "positive fixint-1",
+			name: "positive fixint: 1",
 			args: args{
 				jsonData: uint(8),
 			},
@@ -98,7 +98,7 @@ func TestUint(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "positive fixint-2",
+			name: "positive fixint: 2",
 			args: args{
 				jsonData: uint(127),
 			},
@@ -106,7 +106,7 @@ func TestUint(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "uint 8-1",
+			name: "uint8: 1",
 			args: args{
 				jsonData: uint8(8),
 			},
@@ -114,7 +114,7 @@ func TestUint(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "uint 8-2",
+			name: "uint8: 2",
 			args: args{
 				jsonData: uint8(127),
 			},
@@ -122,7 +122,7 @@ func TestUint(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "uint 8-3",
+			name: "uint8: 3",
 			args: args{
 				jsonData: uint8(255),
 			},
@@ -130,7 +130,7 @@ func TestUint(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "uint 16-1",
+			name: "uint16: 1",
 			args: args{
 				jsonData: uint16(256),
 			},
@@ -138,7 +138,7 @@ func TestUint(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "uint 16-2",
+			name: "uint16: 2",
 			args: args{
 				jsonData: uint16(65535),
 			},
@@ -146,7 +146,7 @@ func TestUint(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "uint 32-1",
+			name: "uint32: 1",
 			args: args{
 				jsonData: uint32(65536),
 			},
@@ -154,7 +154,7 @@ func TestUint(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "uint 32-2",
+			name: "uint32: 2",
 			args: args{
 				jsonData: uint32(4294967295),
 			},
@@ -162,7 +162,7 @@ func TestUint(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "uint 64-1",
+			name: "uint64: 1",
 			args: args{
 				jsonData: uint64(4294967296),
 			},
@@ -170,7 +170,7 @@ func TestUint(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "uint 64-2",
+			name: "uint64: 2",
 			args: args{
 				jsonData: uint64(18446744073709551615),
 			},
@@ -178,19 +178,140 @@ func TestUint(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "uint 1",
+			name: "uint: 1",
 			args: args{
-				jsonData: uint64(4294967296),
+				jsonData: uint(4294967296),
 			},
 			want:    []byte{0xcf, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00},
 			wantErr: false,
 		},
 		{
-			name: "uint 2",
+			name: "uint: 2",
 			args: args{
-				jsonData: uint64(18446744073709551615),
+				jsonData: uint(18446744073709551615),
 			},
 			want:    []byte{0xcf, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := JsonToMsgPack(tt.args.jsonData)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("JsonToMsgPack() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("JsonToMsgPack() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestInt(t *testing.T) {
+	type args struct {
+		jsonData interface{}
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []byte
+		wantErr bool
+	}{
+		{
+			name: "int8: 1",
+			args: args{
+				jsonData: int8(8),
+			},
+			want:    []byte{0x08},
+			wantErr: false,
+		},
+		{
+			name: "int8: 2",
+			args: args{
+				jsonData: int8(-127),
+			},
+			want:    []byte{0xd0, 0x81},
+			wantErr: false,
+		},
+		{
+			name: "int8: 3",
+			args: args{
+				jsonData: int8(-128),
+			},
+			want:    []byte{0xd0, 0x80},
+			wantErr: false,
+		},
+		{
+			name: "int16: 1",
+			args: args{
+				jsonData: int16(-129),
+			},
+			want:    []byte{0xd1, 0xff, 0x7f},
+			wantErr: false,
+		},
+		{
+			name: "int16: 2",
+			args: args{
+				jsonData: int16(-32768),
+			},
+			want:    []byte{0xd1, 0x80, 0x00},
+			wantErr: false,
+		},
+		{
+			name: "int32: 1",
+			args: args{
+				jsonData: int32(-32769),
+			},
+			want:    []byte{0xd2, 0xff, 0xff, 0x7f, 0xff},
+			wantErr: false,
+		},
+		{
+			name: "int32: 2",
+			args: args{
+				jsonData: int32(-2147483648),
+			},
+			want:    []byte{0xd2, 0x80, 0x00, 0x00, 0x00},
+			wantErr: false,
+		},
+		{
+			name: "int64: 1",
+			args: args{
+				jsonData: int64(-2147483649),
+			},
+			want:    []byte{0xd3, 0xff, 0xff, 0xff, 0xff, 0x7f, 0xff, 0xff, 0xff},
+			wantErr: false,
+		},
+		{
+			name: "int64: 2",
+			args: args{
+				jsonData: int64(-9223372036854775808),
+			},
+			want:    []byte{0xd3, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+			wantErr: false,
+		},
+		{
+			name: "constant: 1",
+			args: args{
+				jsonData: 1,
+			},
+			want:    []byte{0x01},
+			wantErr: false,
+		},
+		{
+			name: "constant: 2",
+			args: args{
+				jsonData: -128,
+			},
+			want:    []byte{0xd0, 0x80},
+			wantErr: false,
+		},
+		{
+			name: "constant: 3",
+			args: args{
+				jsonData: -9223372036854775808,
+			},
+			want:    []byte{0xd3, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
 			wantErr: false,
 		},
 	}

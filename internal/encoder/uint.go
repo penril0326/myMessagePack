@@ -2,23 +2,22 @@ package encoder
 
 import (
 	"math"
-	"reflect"
 
 	"github.com/penril0326/myMessagePack/internal/definition"
 )
 
-func (e *encoder) calculateUintSize(rv reflect.Value) int {
-	v := rv.Uint()
+func (e *encoder) calculateUintSize(val uint64) int {
 	size := 0
-	if v <= math.MaxInt8 {
+	if val <= math.MaxInt8 {
 		// do nothing
-	} else if v <= math.MaxUint8 {
+	} else if val <= math.MaxUint8 {
 		size = 1
-	} else if v <= math.MaxUint16 {
+	} else if val <= math.MaxUint16 {
 		size = 2
-	} else if v <= math.MaxUint32 {
+	} else if val <= math.MaxUint32 {
 		size = 4
-	} else { // uint64 or uint
+	} else {
+		// uint64 or uint
 		size = 8
 	}
 
@@ -26,7 +25,6 @@ func (e *encoder) calculateUintSize(rv reflect.Value) int {
 }
 
 func (e *encoder) writeUintDate(value uint64, size int) {
-	// size+1 for the type
 	byteData := make([]byte, size+1)
 	if value <= math.MaxInt8 {
 		// positive fixint, no need to append type
