@@ -18,4 +18,8 @@ const (
 	Int16 byte = 0xd1
 	Int32 byte = 0xd2
 	Int64 byte = 0xd3
+
+	Str8  byte = 0xd9
+	Str16 byte = 0xda
+	Str32 byte = 0xdb
 )
