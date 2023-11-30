@@ -6,6 +6,10 @@ import (
 	"github.com/penril0326/myMessagePack/internal/definition"
 )
 
+const (
+	FixStrStart = 0xa0
+)
+
 func (e *encoder) calculateStrSize(val string) int {
 	length := len(val)
 	extraSize := 0
@@ -26,7 +30,7 @@ func (e *encoder) writeStrDate(val string, size int) {
 	bytedata := make([]byte, size+1)
 	length := len(val)
 	if length < 32 {
-		bytedata[0] = byte(0xa0 + len(val))
+		bytedata[0] = byte(FixStrStart + len(val))
 	} else if length <= math.MaxUint8 {
 		bytedata[0] = definition.Str8
 		bytedata[1] = byte(length)

@@ -42,6 +42,9 @@ func (e *encoder) encode(jsonData interface{}) ([]byte, error) {
 		e.writeFloat32Data(rv.Float(), e.calculateFloat32Size())
 	case reflect.Float64:
 		e.writeFloat64Data(rv.Float(), e.calculateFloat64Size())
+	case reflect.Array, reflect.Slice:
+		e.writeArrayData(rv, e.calculateArraySize(rv))
+	case reflect.Map:
 	case reflect.Pointer:
 	case reflect.Invalid:
 		e.data = append(e.data, definition.Nil)

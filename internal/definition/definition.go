@@ -22,4 +22,10 @@ const (
 	Str8  byte = 0xd9
 	Str16 byte = 0xda
 	Str32 byte = 0xdb
+
+	Array16 byte = 0xdc
+	Array32 byte = 0xdd
+
+	Map16 byte = 0xde
+	Map32 byte = 0xdf
 )
