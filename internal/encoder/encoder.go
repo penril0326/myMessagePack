@@ -1,7 +1,7 @@
 package encoder
 
 import (
-	"errors"
+	"fmt"
 	"reflect"
 
 	"github.com/penril0326/myMessagePack/internal/definition"
@@ -12,32 +12,28 @@ type encoder struct {
 }
 
 func JsonToMsgPack(jsonData interface{}) ([]byte, error) {
-	if jsonData == nil {
-		return []byte{definition.Nil}, nil
-	}
-
 	e := encoder{
 		data: make([]byte, 0),
 	}
 
-	return e.encode(jsonData)
+	if err := e.encode(jsonData); err != nil {
+		return nil, fmt.Errorf("Unexpected error: %s\n", err.Error())
+	}
+
+	return e.data, nil
 }
 
-func (e *encoder) encode(jsonData interface{}) ([]byte, error) {
+func (e *encoder) encode(jsonData interface{}) error {
 	rv := reflect.ValueOf(jsonData)
 	switch rv.Kind() {
 	case reflect.Bool:
-		v := rv.Bool()
-		e.writeBoolData(v)
+		e.writeBoolData(rv.Bool())
 	case reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uint:
-		v := rv.Uint()
-		e.writeUintDate(v, e.calculateUintSize(v))
+		e.writeUintDate(rv.Uint(), e.calculateUintSize(rv.Uint()))
 	case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Int:
-		v := rv.Int()
-		e.writeIntDate(v, e.calculateIntSize(v))
+		e.writeIntDate(rv.Int(), e.calculateIntSize(rv.Int()))
 	case reflect.String:
-		v := rv.String()
-		e.writeStrDate(v, e.calculateStrSize(v))
+		e.writeStrDate(rv.String(), e.calculateStrSize(rv.String()))
 	case reflect.Float32:
 		e.writeFloat32Data(rv.Float(), e.calculateFloat32Size())
 	case reflect.Float64:
@@ -45,12 +41,13 @@ func (e *encoder) encode(jsonData interface{}) ([]byte, error) {
 	case reflect.Array, reflect.Slice:
 		e.writeArrayData(rv, e.calculateArraySize(rv))
 	case reflect.Map:
+		e.writeMapData(rv, e.calculateMapSize(rv))
 	case reflect.Pointer:
 	case reflect.Invalid:
 		e.data = append(e.data, definition.Nil)
 	default:
-		return nil, errors.New("type not support")
+		return fmt.Errorf("Type not support: %v", rv.Kind())
 	}
 
-	return e.data, nil
+	return nil
 }
