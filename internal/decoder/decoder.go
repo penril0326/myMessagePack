@@ -26,7 +26,10 @@ func (d *decoder) decode(rv reflect.Value, curIdx int) error {
 	kind := rv.Kind()
 	switch kind {
 	case reflect.Bool:
-		v := d.decodeBool(curIdx)
+		v, err := d.decodeBool(curIdx)
+		if err != nil {
+			return err
+		}
 		rv.SetBool(v)
 		curIdx++
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
