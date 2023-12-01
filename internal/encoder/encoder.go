@@ -43,6 +43,7 @@ func (e *encoder) encode(jsonData interface{}) error {
 	case reflect.Map:
 		e.writeMapData(rv, e.calculateMapSize(rv))
 	case reflect.Pointer:
+		e.writePointerData(rv)
 	case reflect.Invalid:
 		e.data = append(e.data, definition.Nil)
 	default:

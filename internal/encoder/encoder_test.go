@@ -838,8 +838,83 @@ func TestMap(t *testing.T) {
 	}
 }
 
+func TestPointer(t *testing.T) {
+	type args struct {
+		jsonData interface{}
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []byte
+		wantErr bool
+	}{
+		{
+			name: "pointer: 1",
+			args: args{
+				jsonData: getPointer(1, typeInt),
+			},
+			want:    []byte{0x01},
+			wantErr: false,
+		},
+		{
+			name: "pointer: 2",
+			args: args{
+				jsonData: getPointer("abc", typeString),
+			},
+			want:    []byte{0xa3, 0x61, 0x62, 0x63},
+			wantErr: false,
+		},
+		{
+			name: "pointer: 3",
+			args: args{
+				jsonData: getPointer(1.5, typeFloat),
+			},
+			want:    []byte{0xcb, 0x3f, 0xf8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := JsonToMsgPack(tt.args.jsonData)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("JsonToMsgPack() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("JsonToMsgPack() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func sortbyte(b []byte) {
 	sort.Slice(b, func(i, j int) bool {
 		return b[i] < b[j]
 	})
+}
+
+const (
+	typeInt    = "int"
+	typeUint   = "uint"
+	typeString = "string"
+	typeFloat  = "float"
+)
+
+func getPointer(v interface{}, t string) interface{} {
+	switch t {
+	case typeInt:
+		var newVal int = v.(int)
+		return &newVal
+	case typeUint:
+		var newVal uint = v.(uint)
+		return &newVal
+	case typeString:
+		var newVal string = v.(string)
+		return &newVal
+	case typeFloat:
+		var newVal float64 = v.(float64)
+		return &newVal
+	}
+
+	return nil
 }
