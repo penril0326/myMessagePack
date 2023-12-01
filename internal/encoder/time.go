@@ -61,15 +61,16 @@ func (e *encoder) writeTimeData(rv reflect.Value) {
 			bytedata96[1] = byte(timestampYearLen)
 			bytedata96[2] = byte(timestamp)
 
-			offset := 88
+			offset1 := 24
+			offset2 := 56
 			for i := 3; i < 15; i++ {
 				if i < 7 {
-					bytedata96[i] = byte(ts.nanoseconds >> offset)
+					bytedata96[i] = byte(ts.nanoseconds >> offset1)
+					offset1 -= 8
 				} else {
-					bytedata96[i] = byte(ts.seconds >> offset)
+					bytedata96[i] = byte(seconds >> offset2)
+					offset2 -= 8
 				}
-
-				offset -= 8
 			}
 
 			e.data = append(e.data, bytedata96...)

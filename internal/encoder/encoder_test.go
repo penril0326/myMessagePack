@@ -914,15 +914,15 @@ func TestTimestamp(t *testing.T) {
 			want:    []byte{0xd7, 0xff, 0x00, 0x00, 0x00, 0x78, 0x65, 0x69, 0xfb, 0xf8},
 			wantErr: false,
 		},
-		// {
-		// 	name: "timestamp96",
-		// 	args: args{
-		// 		jsonData: time.Date(123456789, time.December, 1, 23, 30, 00, 30, time.Local),
-		// 	},
-		// 	want: []byte{0xc7, 0x0c, 0xff, 0x00, 0x00, 0x00, 0x1e, 0x00, 0x0d, 0xd7,
-		// 		0x43, 0x15, 0xd4, 0xfc, 0x78},
-		// 	wantErr: false,
-		// },
+		{
+			name: "timestamp96",
+			args: args{
+				jsonData: time.Date(123456789, time.December, 1, 23, 30, 00, 30, time.Local),
+			},
+			want: []byte{0xc7, 0x0c, 0xff, 0x00, 0x00, 0x00, 0x1e, 0x00, 0x0d, 0xd7,
+				0x43, 0x15, 0xd4, 0xfc, 0x78},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
