@@ -7,12 +7,14 @@ import (
 )
 
 func (d *decoder) decodeBool(offset int) (bool, error) {
-	switch d.data[offset] {
+	typeFamily := d.data[offset]
+
+	switch typeFamily {
 	case definition.False:
 		return false, nil
 	case definition.True:
 		return true, nil
 	}
 
-	return false, fmt.Errorf("Got a non boolean type, code: %x", d.data[offset])
+	return false, fmt.Errorf("Got a non boolean type, code: %x", typeFamily)
 }
