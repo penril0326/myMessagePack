@@ -28,4 +28,9 @@ const (
 
 	Map16 byte = 0xde
 	Map32 byte = 0xdf
+
+	Fixext4 byte = 0xd6
+	Fixext8 byte = 0xd7
+
+	Ext8 byte = 0xc7
 )

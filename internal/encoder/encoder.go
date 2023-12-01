@@ -44,6 +44,9 @@ func (e *encoder) encode(jsonData interface{}) error {
 		e.writeMapData(rv, e.calculateMapSize(rv))
 	case reflect.Pointer:
 		e.writePointerData(rv)
+	case reflect.Struct:
+		// timestamp
+		e.writeTimeData(rv)
 	case reflect.Invalid:
 		e.data = append(e.data, definition.Nil)
 	default:
