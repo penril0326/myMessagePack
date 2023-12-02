@@ -19,5 +19,5 @@ func main() {
 		log.Fatalf("Convert JSON to msgpack occured error: %s", err.Error())
 	}
 
-	fmt.Printf("%x \n", b)
+	fmt.Printf("%x\n", b)
 }

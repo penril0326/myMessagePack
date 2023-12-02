@@ -19,9 +19,11 @@ const (
 	Int32 byte = 0xd2
 	Int64 byte = 0xd3
 
-	Str8  byte = 0xd9
-	Str16 byte = 0xda
-	Str32 byte = 0xdb
+	StrFixStart byte = 0xa0
+	StrFixEnd   byte = 0xbf
+	Str8        byte = 0xd9
+	Str16       byte = 0xda
+	Str32       byte = 0xdb
 
 	Array16 byte = 0xdc
 	Array32 byte = 0xdd
