@@ -2,6 +2,7 @@ package decoder
 
 import (
 	"encoding/binary"
+	"fmt"
 
 	"github.com/penril0326/myMessagePack/internal/definition"
 )
@@ -9,7 +10,7 @@ import (
 func (d *decoder) decodeString(offset int) (string, int, error) {
 	strFamily, next, err := d.getTypeFamily(offset)
 	if err != nil {
-		return "", 0, err
+		return "", -1, err
 	}
 
 	if d.isFixString(strFamily) {
@@ -24,8 +25,10 @@ func (d *decoder) decodeString(offset int) (string, int, error) {
 		return d.getString(next, 1)
 	} else if strFamily == definition.Str16 {
 		return d.getString(next, 2)
-	} else {
+	} else if strFamily == definition.Str32 {
 		return d.getString(next, 4)
+	} else {
+		return "", -1, fmt.Errorf("Decode string occured error, code: %v", strFamily)
 	}
 }
 
@@ -46,8 +49,10 @@ func (d *decoder) getString(offset int, familySize int) (string, int, error) {
 	readLength := 0
 	if familySize == 1 {
 		readLength = int(dataLen[0])
-	} else {
+	} else if familySize == 2 {
 		readLength = int(binary.BigEndian.Uint16(dataLen))
+	} else {
+		readLength = int(binary.BigEndian.Uint32(dataLen))
 	}
 
 	data, next, err := d.readSizeN(next, readLength)

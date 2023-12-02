@@ -1,6 +1,7 @@
 package decoder
 
 import (
+	"encoding/binary"
 	"fmt"
 	"reflect"
 )
@@ -38,6 +39,13 @@ func (d *decoder) decode(rv reflect.Value, curIdx int) error {
 		rv.SetBool(v)
 		curIdx = next
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		ui, next, err := d.decodeUint(curIdx)
+		if err != nil {
+			return err
+		}
+
+		rv.SetUint(ui)
+		curIdx = next
 	case reflect.String:
 		s, next, err := d.decodeString(curIdx)
 		if err != nil {
@@ -69,4 +77,19 @@ func (d *decoder) readSizeN(start, n int) ([]byte, int, error) {
 	}
 
 	return d.data[start : start+n], start + n, nil
+}
+
+func (d *decoder) getFamilySize(dataLen []byte) uint {
+	length := len(dataLen)
+	if length == 0 {
+		return 0
+	} else if length == 1 {
+		return uint(dataLen[0])
+	} else if length == 2 {
+		return uint(binary.BigEndian.Uint16(dataLen))
+	} else if length == 4 {
+		return uint(binary.BigEndian.Uint32(dataLen))
+	} else {
+		return uint(binary.BigEndian.Uint64(dataLen))
+	}
 }

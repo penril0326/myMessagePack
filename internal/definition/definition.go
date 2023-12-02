@@ -9,6 +9,12 @@ const (
 	Float32 byte = 0xca
 	Float64 byte = 0xcb
 
+	PositiveFixIntStart byte = 0x00
+	PositiveFixIntEnd   byte = 0x7f
+
+	NegativeFixIntMin = -32 // 0xe0
+	NegativeFixIntMax = -1  // 0xff
+
 	Uint8  byte = 0xcc
 	Uint16 byte = 0xcd
 	Uint32 byte = 0xce
