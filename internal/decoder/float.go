@@ -60,19 +60,3 @@ func (d *decoder) decodeFloat64(offset int) (float64, int, error) {
 		return 0.0, -1, fmt.Errorf("Decode float32 occured error, code: %v", floatFamily)
 	}
 }
-
-func (d *decoder) isUintFamily(familyCode byte) bool {
-	return d.isPositiveFixInt(familyCode) ||
-		(familyCode == definition.Uint8) ||
-		(familyCode == definition.Uint16) ||
-		(familyCode == definition.Uint32) ||
-		(familyCode == definition.Uint64)
-}
-
-func (d *decoder) isIntFamily(familyCode byte) bool {
-	return d.isNegativeFixNum(familyCode) ||
-		(familyCode == definition.Int8) ||
-		(familyCode == definition.Int16) ||
-		(familyCode == definition.Int32) ||
-		(familyCode == definition.Int64)
-}

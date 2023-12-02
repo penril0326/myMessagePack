@@ -85,3 +85,11 @@ func (d *decoder) isPositiveFixInt(numberFamily byte) bool {
 func (d *decoder) isNegativeFixNum(numberFamily byte) bool {
 	return int8(numberFamily) >= definition.NegativeFixIntMin && int8(numberFamily) <= definition.NegativeFixIntMax
 }
+
+func (d *decoder) isUintFamily(familyCode byte) bool {
+	return d.isPositiveFixInt(familyCode) ||
+		(familyCode == definition.Uint8) ||
+		(familyCode == definition.Uint16) ||
+		(familyCode == definition.Uint32) ||
+		(familyCode == definition.Uint64)
+}

@@ -6,7 +6,7 @@ Trying to implement a converter that can convert from JSON to MessagePack and fr
 `bool`, `int` family, `uint` family, `string`, `float32`, `float64`, map, array, slice, timestamp
 
 ### Decode
-`bool`, `uint` family, `string`
+`bool`, `uint` family,`int` family,  `string`, `float32`, `float64`
 
 # How to use
 

@@ -24,16 +24,26 @@ func MsgPackToJson(data []byte, v interface{}) error {
 		data: data,
 	}
 
-	return d.decode(rv.Elem(), 0)
+	lastIdx, err := d.decode(rv.Elem(), 0)
+	if err != nil {
+		return err
+	}
+
+	if len(data) != lastIdx {
+		return fmt.Errorf("data lenght not equivalent to decode length, data length = %d, last decode indx = %d\n",
+			len(data), lastIdx)
+	}
+
+	return nil
 }
 
-func (d *decoder) decode(rv reflect.Value, curIdx int) error {
+func (d *decoder) decode(rv reflect.Value, curIdx int) (int, error) {
 	kind := rv.Kind()
 	switch kind {
 	case reflect.Bool:
 		v, next, err := d.decodeBool(curIdx)
 		if err != nil {
-			return err
+			return -1, err
 		}
 
 		rv.SetBool(v)
@@ -41,7 +51,7 @@ func (d *decoder) decode(rv reflect.Value, curIdx int) error {
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		ui, next, err := d.decodeUint(curIdx)
 		if err != nil {
-			return err
+			return -1, err
 		}
 
 		rv.SetUint(ui)
@@ -49,7 +59,7 @@ func (d *decoder) decode(rv reflect.Value, curIdx int) error {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		i, next, err := d.decodeInt(curIdx)
 		if err != nil {
-			return err
+			return -1, err
 		}
 
 		rv.SetInt(i)
@@ -57,7 +67,7 @@ func (d *decoder) decode(rv reflect.Value, curIdx int) error {
 	case reflect.Float32:
 		f32, next, err := d.decodeFloat32(curIdx)
 		if err != nil {
-			return err
+			return -1, err
 		}
 
 		rv.SetFloat(float64(f32))
@@ -65,7 +75,7 @@ func (d *decoder) decode(rv reflect.Value, curIdx int) error {
 	case reflect.Float64:
 		f64, next, err := d.decodeFloat64(curIdx)
 		if err != nil {
-			return err
+			return -1, err
 		}
 
 		rv.SetFloat(f64)
@@ -73,17 +83,39 @@ func (d *decoder) decode(rv reflect.Value, curIdx int) error {
 	case reflect.String:
 		s, next, err := d.decodeString(curIdx)
 		if err != nil {
-			return err
+			return -1, err
 		}
 
 		rv.SetString(s)
 		curIdx = next
-	case reflect.Invalid:
+	case reflect.Array:
+		next, err := d.decodeArray(curIdx, rv)
+		if err != nil {
+			return -1, err
+		}
+		curIdx = next
+	case reflect.Interface:
+		if rv.Elem().Kind() == reflect.Pointer {
+			next, err := d.decode(rv.Elem(), curIdx)
+			if err != nil {
+				return -1, err
+			}
+			curIdx = next
+		} else {
+			v, next, err := d.decodeInterface(rv, curIdx)
+			if err != nil {
+				return -1, err
+			}
+			if v != nil {
+				rv.Set(reflect.ValueOf(v))
+			}
+			curIdx = next
+		}
 	default:
-		return fmt.Errorf("Got unexpected type: %v", kind)
+		return -1, fmt.Errorf("Got unexpected type: %v", kind)
 	}
 
-	return nil
+	return curIdx, nil
 }
 
 func (d *decoder) getTypeFamily(offset int) (byte, int, error) {

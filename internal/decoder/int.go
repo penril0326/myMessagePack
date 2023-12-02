@@ -77,3 +77,11 @@ func (d *decoder) decodeInt(offset int) (int64, int, error) {
 		return 0, -1, fmt.Errorf("Decode uint occured error, code: %v", numberFamily)
 	}
 }
+
+func (d *decoder) isIntFamily(familyCode byte) bool {
+	return d.isNegativeFixNum(familyCode) ||
+		(familyCode == definition.Int8) ||
+		(familyCode == definition.Int16) ||
+		(familyCode == definition.Int32) ||
+		(familyCode == definition.Int64)
+}

@@ -62,3 +62,10 @@ func (d *decoder) getString(offset int, familySize int) (string, int, error) {
 
 	return string(data), next, nil
 }
+
+func (d *decoder) isStringFamily(familyCode byte) bool {
+	return d.isFixString(familyCode) ||
+		(familyCode == definition.Str8) ||
+		(familyCode == definition.Str16) ||
+		(familyCode == definition.Str32)
+}
