@@ -256,6 +256,115 @@ func TestUint(t *testing.T) {
 	}
 }
 
+func TestFloat32(t *testing.T) {
+	tests := []f{
+		func() {
+			data := []byte{0x7f}
+			var want float32
+			err := MsgPackToJson(data, &want)
+			t.Run("float32: 1", func(t *testing.T) {
+				if err != nil {
+					t.Fatalf("MsgPackToJson got err %s", err.Error())
+				}
+				if want != 127.0 {
+					t.Errorf("MsgPackToJson got %v, want %v", want, 127.0)
+				}
+			})
+		},
+		func() {
+			data := []byte{0xec}
+			var want float32
+			err := MsgPackToJson(data, &want)
+			t.Run("flaot32: 2", func(t *testing.T) {
+				if err != nil {
+					t.Fatalf("MsgPackToJson got err %s", err.Error())
+				}
+				if want != -20.0 {
+					t.Errorf("MsgPackToJson got %v, want %v", want, -20.0)
+				}
+			})
+		},
+		func() {
+			data := []byte{0xCf, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}
+			var want float32
+			err := MsgPackToJson(data, &want)
+			t.Run("flaot32: 3", func(t *testing.T) {
+				if err != nil {
+					t.Fatalf("MsgPackToJson got err %s", err.Error())
+				}
+				if want != 1.8446744e+19 {
+					t.Errorf("MsgPackToJson got %v, want %v", want, 1.8446744e+19)
+				}
+			})
+		},
+		func() {
+			data := []byte{0xca, 0x3f, 0xf1, 0xf9, 0xa6}
+			var want float32
+			err := MsgPackToJson(data, &want)
+			t.Run("flaot32: 4", func(t *testing.T) {
+				if err != nil {
+					t.Fatalf("MsgPackToJson got err %s", err.Error())
+				}
+				if want != 1.8904312 {
+					t.Errorf("MsgPackToJson got %v, want %v", want, 1.8904312)
+				}
+			})
+		},
+	}
+
+	for _, fun := range tests {
+		fun()
+	}
+}
+
+func TestFloat64(t *testing.T) {
+	tests := []f{
+		func() {
+			data := []byte{0xff}
+			var want float64
+			err := MsgPackToJson(data, &want)
+			t.Run("float64: 1", func(t *testing.T) {
+				if err != nil {
+					t.Fatalf("MsgPackToJson got err %s", err.Error())
+				}
+				if want != -1.0 {
+					t.Errorf("MsgPackToJson got %v, want %v", want, -1.0)
+				}
+			})
+		},
+		func() {
+			data := []byte{0xca, 0x3f, 0xf1, 0xf9, 0xa6}
+			var want float64
+			err := MsgPackToJson(data, &want)
+			t.Run("float64: 2", func(t *testing.T) {
+				if err != nil {
+					t.Fatalf("MsgPackToJson got err %s", err.Error())
+				}
+				if want != 1.8904311656951904 {
+					t.Errorf("MsgPackToJson got %v, want %v", want, 1.8904311656951904)
+				}
+			})
+		},
+		func() {
+			data := []byte{0xcb, 0x3f, 0xf1, 0xf9, 0xa6, 0xb6, 0xc6, 0xd6, 0xf6}
+			var want float64
+			err := MsgPackToJson(data, &want)
+			t.Run("float64: 3", func(t *testing.T) {
+				if err != nil {
+					t.Fatalf("MsgPackToJson got err %s", err.Error())
+				}
+				if want != 1.123450006457856 {
+					t.Errorf("MsgPackToJson got %v, want %v", want, 1.123450006457856)
+				}
+			})
+		},
+	}
+
+	for _, fun := range tests {
+		fun()
+	}
+}
+
 func TestString(t *testing.T) {
 	tests := []f{
 		func() {

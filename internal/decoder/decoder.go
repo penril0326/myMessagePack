@@ -46,6 +46,22 @@ func (d *decoder) decode(rv reflect.Value, curIdx int) error {
 
 		rv.SetUint(ui)
 		curIdx = next
+	case reflect.Float32:
+		f32, next, err := d.decodeFloat32(curIdx)
+		if err != nil {
+			return err
+		}
+
+		rv.SetFloat(float64(f32))
+		curIdx = next
+	case reflect.Float64:
+		f64, next, err := d.decodeFloat64(curIdx)
+		if err != nil {
+			return err
+		}
+
+		rv.SetFloat(f64)
+		curIdx = next
 	case reflect.String:
 		s, next, err := d.decodeString(curIdx)
 		if err != nil {
