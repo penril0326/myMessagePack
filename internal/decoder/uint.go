@@ -72,12 +72,8 @@ func (d *decoder) decodeUint(offset int) (uint64, int, error) {
 	}
 }
 
-func (d *decoder) parseUint(from, to int) uint {
-	return 0
-}
-
 func (d *decoder) isPositiveFixInt(numberFamily byte) bool {
-	return (numberFamily >= 0x00) && (numberFamily <= 0x7f)
+	return (numberFamily >= definition.PositiveFixIntStart) && (numberFamily <= definition.PositiveFixIntEnd)
 }
 
 func (d *decoder) isNegativeFixNum(numberFamily byte) bool {

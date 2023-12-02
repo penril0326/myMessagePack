@@ -6,11 +6,6 @@ import (
 	"github.com/penril0326/myMessagePack/internal/definition"
 )
 
-const (
-	NegativeFixIntMin = -32 // 0xe0
-	NegativeFixIntMax = -1  // 0xff
-)
-
 func (e *encoder) calculateIntSize(val int64) int {
 	size := 0
 	if isUnsigned(val) {
@@ -68,7 +63,7 @@ func (e *encoder) writeIntDate(val int64, size int) {
 }
 
 func isNegativeFixInt(val int64) bool {
-	return (val >= NegativeFixIntMin) && (val <= NegativeFixIntMax)
+	return (val >= definition.NegativeFixIntMin) && (val <= definition.NegativeFixIntMax)
 }
 
 func isUnsigned(val int64) bool {
