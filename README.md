@@ -12,7 +12,7 @@ Trying to implement a converter that can convert from JSON to MessagePack and fr
 
 ```Go
 func main() {
-    // Declare a map as a JSON object
+    // Encode: Declare a map as a JSON object
     m := map[string]interface{}{
         "compact": true,
         "schema" 0,
@@ -24,6 +24,15 @@ func main() {
 	}
 
 	fmt.Printf("%x\n", b) // output: 82a7c3a600
+
+    // Decode
+    m2 := map[string]interface{}{}
+    err := decoder.MsgPackToJson(b, &m2)
+    if err != nil {
+		log.Fatalf("Convert msgpack to JSON occured error: %s", err.Error())
+	}
+
+    fmt.Println(m2)
 }
 
 ```
