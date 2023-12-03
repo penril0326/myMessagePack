@@ -28,8 +28,7 @@ func (d *decoder) decodeInterface(rv reflect.Value, offset int) (interface{}, in
 	} else if d.isStringFamily(family) {
 		return d.decodeString(offset)
 		// } else if d.isArrayFamily(family) {
-		// 	next, err := d.decodeArray(offset, rv)
-		// 	return rv.Interface(), next, err
+
 	} else {
 		return nil, -1, fmt.Errorf("Decode interface occured error, code: %v", family)
 	}

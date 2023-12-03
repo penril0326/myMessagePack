@@ -860,7 +860,60 @@ func TestMap(t *testing.T) {
 				"F": false,
 			}
 			err := MsgPackToJson(data, &got)
-			t.Run("slice: 2", func(t *testing.T) {
+			t.Run("map: 2", func(t *testing.T) {
+				if err != nil {
+					t.Fatalf("MsgPackToJson got err %s", err.Error())
+				}
+				if !reflect.DeepEqual(got, want) {
+					t.Errorf("MsgPackToJson got %v, want %v", got, want)
+				}
+			})
+		},
+		func() {
+			data := []byte{0x81, 0xa1, 0x54, 0x93, 0x01, 0x02, 0x03}
+			var got map[string][]int
+			want := map[string][]int{
+				"T": {1, 2, 3},
+			}
+			err := MsgPackToJson(data, &got)
+			t.Run("map: 3", func(t *testing.T) {
+				if err != nil {
+					t.Fatalf("MsgPackToJson got err %s", err.Error())
+				}
+				if !reflect.DeepEqual(got, want) {
+					t.Errorf("MsgPackToJson got %v, want %v", got, want)
+				}
+			})
+		},
+		func() {
+			data := []byte{0x81, 0xa1, 0x61, 0x82, 0xa1, 0x62, 0xc3, 0xa1, 0x63, 0xc2}
+			var got map[string]map[string]bool
+			want := map[string]map[string]bool{
+				"a": {
+					"b": true,
+					"c": false,
+				},
+			}
+			err := MsgPackToJson(data, &got)
+			t.Run("map: 4", func(t *testing.T) {
+				if err != nil {
+					t.Fatalf("MsgPackToJson got err %s", err.Error())
+				}
+				if !reflect.DeepEqual(got, want) {
+					t.Errorf("MsgPackToJson got %v, want %v", got, want)
+				}
+			})
+		},
+		func() {
+			data := []byte{0x81, 0xa1, 0x61, 0x81, 0x01, 0xc3}
+			var got map[string]map[int]bool
+			want := map[string]map[int]bool{
+				"a": {
+					1: true,
+				},
+			}
+			err := MsgPackToJson(data, &got)
+			t.Run("map: 5", func(t *testing.T) {
 				if err != nil {
 					t.Fatalf("MsgPackToJson got err %s", err.Error())
 				}
@@ -877,7 +930,23 @@ func TestMap(t *testing.T) {
 		// 		"F": false,
 		// 	}
 		// 	err := MsgPackToJson(data, &got)
-		// 	t.Run("slice: 2", func(t *testing.T) {
+		// 	t.Run("map: 4", func(t *testing.T) {
+		// 		if err != nil {
+		// 			t.Fatalf("MsgPackToJson got err %s", err.Error())
+		// 		}
+		// 		if !reflect.DeepEqual(got, want) {
+		// 			t.Errorf("MsgPackToJson got %v, want %v", got, want)
+		// 		}
+		// 	})
+		// },
+		// func() {
+		// 	data := []byte{0x81, 0xa5, 0x73, 0x6c, 0x69, 0x63, 0x65, 0x93, 0x01, 0x02, 0x03}
+		// 	var got map[string]interface{}
+		// 	want := map[string]interface{}{
+		// 		"slice": []int{1, 2, 3},
+		// 	}
+		// 	err := MsgPackToJson(data, &got)
+		// 	t.Run("map: 4", func(t *testing.T) {
 		// 		if err != nil {
 		// 			t.Fatalf("MsgPackToJson got err %s", err.Error())
 		// 		}

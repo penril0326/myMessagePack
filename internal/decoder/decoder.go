@@ -103,22 +103,22 @@ func (d *decoder) decode(rv reflect.Value, curIdx int) (int, error) {
 
 		curIdx = next
 	case reflect.Interface:
-	// if rv.Elem().Kind() == reflect.Pointer {
-	// 	next, err := d.decode(rv.Elem(), curIdx)
-	// 	if err != nil {
-	// 		return -1, err
-	// 	}
-	// 	curIdx = next
-	// } else {
-	// 	v, next, err := d.decodeInterface(rv, curIdx)
-	// 	if err != nil {
-	// 		return -1, err
-	// 	}
-	// 	if v != nil {
-	// 		rv.Set(reflect.ValueOf(v))
-	// 	}
-	// 	curIdx = next
-	// }
+		if rv.Elem().Kind() == reflect.Pointer {
+			next, err := d.decode(rv.Elem(), curIdx)
+			if err != nil {
+				return -1, err
+			}
+			curIdx = next
+		} else {
+			v, next, err := d.decodeInterface(rv, curIdx)
+			if err != nil {
+				return -1, err
+			}
+			if v != nil {
+				rv.Set(reflect.ValueOf(v))
+			}
+			curIdx = next
+		}
 	case reflect.Map:
 		next, err := d.decodeMap(curIdx, rv)
 		if err != nil {
