@@ -3,10 +3,10 @@ Trying to implement a converter that can convert from JSON to MessagePack and fr
 
 # Support type
 ### Encode
-`bool`, `int` family, `uint` family, `string`, `float32`, `float64`, map, array, slice, timestamp
+`bool`, `int` family, `uint` family, `string`, `float32`, `float64`, array, slice, map, timestamp
 
 ### Decode
-`bool`, `uint` family,`int` family,  `string`, `float32`, `float64`
+`bool`, `uint` family,`int` family,  `string`, `float32`, `float64`, primitive array/slice/map
 
 # How to use
 
@@ -40,3 +40,6 @@ $ go test -v .
 $ cd internal/dncoder
 $ go test -v .
 ```
+
+# Known issue
+Some complicated types are not supported such as nested slice/array/map with interface.

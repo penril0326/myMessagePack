@@ -88,29 +88,44 @@ func (d *decoder) decode(rv reflect.Value, curIdx int) (int, error) {
 
 		rv.SetString(s)
 		curIdx = next
+	case reflect.Slice:
+		next, err := d.decodeSlice(curIdx, rv)
+		if err != nil {
+			return -1, err
+		}
+
+		curIdx = next
 	case reflect.Array:
 		next, err := d.decodeArray(curIdx, rv)
 		if err != nil {
 			return -1, err
 		}
+
 		curIdx = next
 	case reflect.Interface:
-		if rv.Elem().Kind() == reflect.Pointer {
-			next, err := d.decode(rv.Elem(), curIdx)
-			if err != nil {
-				return -1, err
-			}
-			curIdx = next
-		} else {
-			v, next, err := d.decodeInterface(rv, curIdx)
-			if err != nil {
-				return -1, err
-			}
-			if v != nil {
-				rv.Set(reflect.ValueOf(v))
-			}
-			curIdx = next
+	// if rv.Elem().Kind() == reflect.Pointer {
+	// 	next, err := d.decode(rv.Elem(), curIdx)
+	// 	if err != nil {
+	// 		return -1, err
+	// 	}
+	// 	curIdx = next
+	// } else {
+	// 	v, next, err := d.decodeInterface(rv, curIdx)
+	// 	if err != nil {
+	// 		return -1, err
+	// 	}
+	// 	if v != nil {
+	// 		rv.Set(reflect.ValueOf(v))
+	// 	}
+	// 	curIdx = next
+	// }
+	case reflect.Map:
+		next, err := d.decodeMap(curIdx, rv)
+		if err != nil {
+			return -1, err
 		}
+
+		curIdx = next
 	default:
 		return -1, fmt.Errorf("Got unexpected type: %v", kind)
 	}

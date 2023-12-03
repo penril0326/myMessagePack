@@ -677,9 +677,9 @@ func TestArray(t *testing.T) {
 			})
 		},
 		func() {
-			data := []byte{0x92, 0xc3, 0x01}
-			var got [2]interface{}
-			want := [2]interface{}{true, uint64(1)}
+			data := []byte{0x92, 0xa1, 0x61, 0xa1, 0x62}
+			var got [2]string
+			want := [2]string{"a", "b"}
 			err := MsgPackToJson(data, &got)
 			t.Run("fixarray: 2", func(t *testing.T) {
 				if err != nil {
@@ -691,9 +691,9 @@ func TestArray(t *testing.T) {
 			})
 		},
 		func() {
-			data := []byte{0x92, 0xc2, 0xff}
-			var got [2]interface{}
-			want := [2]interface{}{false, int64(-1)}
+			data := []byte{0x92, 0xCa, 0x3F, 0xF8, 0x00, 0x00, 0xCa, 0xBF, 0xF8, 0x00, 0x00}
+			var got [2]float32
+			want := [2]float32{1.9375, -1.9375}
 			err := MsgPackToJson(data, &got)
 			t.Run("fixarray: 3", func(t *testing.T) {
 				if err != nil {
@@ -704,12 +704,107 @@ func TestArray(t *testing.T) {
 				}
 			})
 		},
+		// func() {
+		// 	data := []byte{0x92, 0xc3, 0x01}
+		// 	var got [2]interface{}
+		// 	want := [2]interface{}{true, uint64(1)}
+		// 	err := MsgPackToJson(data, &got)
+		// 	t.Run("fixarray: 2", func(t *testing.T) {
+		// 		if err != nil {
+		// 			t.Fatalf("MsgPackToJson got err %s", err.Error())
+		// 		}
+		// 		if !reflect.DeepEqual(got, want) {
+		// 			t.Errorf("MsgPackToJson got %v, want %v", got, want)
+		// 		}
+		// 	})
+		// },
+		// func() {
+		// 	data := []byte{0x92, 0xc2, 0xff}
+		// 	var got [2]interface{}
+		// 	want := [2]interface{}{false, int64(-1)}
+		// 	err := MsgPackToJson(data, &got)
+		// 	t.Run("fixarray: 3", func(t *testing.T) {
+		// 		if err != nil {
+		// 			t.Fatalf("MsgPackToJson got err %s", err.Error())
+		// 		}
+		// 		if !reflect.DeepEqual(got, want) {
+		// 			t.Errorf("MsgPackToJson got %v, want %v", got, want)
+		// 		}
+		// 	})
+		// },
+		// func() {
+		// 	data := []byte{0x92, 0xa1, 0x61, 0xca, 0x40, 0xc8, 0x1c, 0xc5}
+		// 	var got [2]interface{}
+		// 	want := [2]interface{}{"a", float32(6.253511905670166)}
+		// 	err := MsgPackToJson(data, &got)
+		// 	t.Run("fixarray: 4", func(t *testing.T) {
+		// 		if err != nil {
+		// 			t.Fatalf("MsgPackToJson got err %s", err.Error())
+		// 		}
+		// 		if !reflect.DeepEqual(got, want) {
+		// 			t.Errorf("MsgPackToJson got %v, want %v", got, want)
+		// 		}
+		// 	})
+		// },
+		// func() {
+		// 	data := []byte{0x92, 0x92, 0xc2, 0xe0, 0x92, 0xA1, 0x7A, 0xCB, 0x40, 0xC8, 0x1C, 0xC5, 0xC8, 0xA7, 0x12, 0x47}
+		// 	var got [2][2]interface{}
+		// 	want := [2][2]interface{}{{false, int64(-32)}, {"z", float64(12345.545185932087)}}
+		// 	err := MsgPackToJson(data, &got)
+		// 	t.Run("fixarray: 5", func(t *testing.T) {
+		// 		if err != nil {
+		// 			t.Fatalf("MsgPackToJson got err %s", err.Error())
+		// 		}
+		// 		if !reflect.DeepEqual(got, want) {
+		// 			t.Errorf("MsgPackToJson got %v, want %v", got, want)
+		// 		}
+		// 	})
+		// },
+		// // func() {
+		// // 	data := []byte{0x92, 0x92, 0xC3, 0xA1, 0x61, 0xCB, 0x40, 0x88, 0x4C, 0x5C, 0x8A, 0x71, 0x24, 0x6C}
+		// // 	var got [2]interface{}
+		// // 	want := [2]interface{}{[2]interface{}{true, "a"}, float64(777.545185932087)}
+		// // 	err := MsgPackToJson(data, &got)
+		// // 	t.Run("fixarray: 6", func(t *testing.T) {
+		// // 		if err != nil {
+		// // 			t.Fatalf("MsgPackToJson got err %s", err.Error())
+		// // 		}
+		// // 		if !reflect.DeepEqual(got, want) {
+		// // 			t.Errorf("MsgPackToJson got %v, want %v", got, want)
+		// // 		}
+		// // 	})
+		// // },
+		// func() {
+		// 	data := []byte{0xDC, 0x00, 0x10, 0xC2, 0xE0, 0xA1, 0x7A, 0xCB, 0x40, 0xC8, 0x1C, 0xC5, 0xC8, 0xA7, 0x12, 0x47, 0xA1, 0x7A, 0xA1,
+		// 		0x79, 0xA1, 0x77, 0xA1, 0x78, 0xA1, 0x66, 0xA1, 0x74, 0xC3, 0x7B, 0xA3, 0x61, 0x62, 0x63, 0xA1, 0x61, 0xA1, 0x63, 0xA1, 0x76}
+		// 	var got [16]interface{}
+		// 	want := [16]interface{}{false, int64(-32), "z", float64(12345.545185932087), "z", "y", "w", "x", "f",
+		// 		"t", true, uint64(123), "abc", "a", "c", "v"}
+		// 	err := MsgPackToJson(data, &got)
+		// 	t.Run("array16: 1", func(t *testing.T) {
+		// 		if err != nil {
+		// 			t.Fatalf("MsgPackToJson got err %s", err.Error())
+		// 		}
+		// 		if !reflect.DeepEqual(got, want) {
+		// 			t.Errorf("MsgPackToJson got %v, want %v", got, want)
+		// 		}
+		// 	})
+		// },
+	}
+
+	for _, fun := range tests {
+		fun()
+	}
+}
+
+func TestSlice(t *testing.T) {
+	tests := []f{
 		func() {
-			data := []byte{0x92, 0xa1, 0x61, 0xca, 0x40, 0xc8, 0x1c, 0xc5}
-			var got [2]interface{}
-			want := [2]interface{}{"a", float32(6.253511905670166)}
+			data := []byte{0x92, 0x01, 0x02}
+			var got []int
+			want := []int{1, 2}
 			err := MsgPackToJson(data, &got)
-			t.Run("fixarray: 4", func(t *testing.T) {
+			t.Run("slice: 1", func(t *testing.T) {
 				if err != nil {
 					t.Fatalf("MsgPackToJson got err %s", err.Error())
 				}
@@ -719,11 +814,53 @@ func TestArray(t *testing.T) {
 			})
 		},
 		func() {
-			data := []byte{0x92, 0x92, 0xc2, 0xe0, 0x92, 0xA1, 0x7A, 0xCB, 0x40, 0xC8, 0x1C, 0xC5, 0xC8, 0xA7, 0x12, 0x47}
-			var got [2][2]interface{}
-			want := [2][2]interface{}{{false, int64(-32)}, {"z", float64(12345.545185932087)}}
+			data := []byte{0x92, 0xc3, 0xc2}
+			var got []bool
+			want := []bool{true, false}
 			err := MsgPackToJson(data, &got)
-			t.Run("fixarray: 5", func(t *testing.T) {
+			t.Run("slice: 2", func(t *testing.T) {
+				if err != nil {
+					t.Fatalf("MsgPackToJson got err %s", err.Error())
+				}
+				if !reflect.DeepEqual(got, want) {
+					t.Errorf("MsgPackToJson got %v, want %v", got, want)
+				}
+			})
+		},
+	}
+
+	for _, fun := range tests {
+		fun()
+	}
+}
+
+func TestMap(t *testing.T) {
+	tests := []f{
+		func() {
+			data := []byte{0x81, 0xa1, 0x61, 0xa4, 0x30, 0x78, 0x36, 0x31}
+			var got map[string]string
+			want := map[string]string{
+				"a": "0x61",
+			}
+			err := MsgPackToJson(data, &got)
+			t.Run("map: 1", func(t *testing.T) {
+				if err != nil {
+					t.Fatalf("MsgPackToJson got err %s", err.Error())
+				}
+				if !reflect.DeepEqual(got, want) {
+					t.Errorf("MsgPackToJson got %v, want %v", got, want)
+				}
+			})
+		},
+		func() {
+			data := []byte{0x82, 0xa1, 0x54, 0xc3, 0xa1, 0x46, 0xc2}
+			var got map[string]bool
+			want := map[string]bool{
+				"T": true,
+				"F": false,
+			}
+			err := MsgPackToJson(data, &got)
+			t.Run("slice: 2", func(t *testing.T) {
 				if err != nil {
 					t.Fatalf("MsgPackToJson got err %s", err.Error())
 				}
@@ -733,11 +870,14 @@ func TestArray(t *testing.T) {
 			})
 		},
 		// func() {
-		// 	data := []byte{0x92, 0x92, 0xC3, 0xA1, 0x61, 0xCB, 0x40, 0x88, 0x4C, 0x5C, 0x8A, 0x71, 0x24, 0x6C}
-		// 	var got [2]interface{}
-		// 	want := [2]interface{}{[2]interface{}{true, "a"}, float64(777.545185932087)}
+		// 	data := []byte{0x82, 0xa1, 0x54, 0xc3, 0xa1, 0x46, 0xc2}
+		// 	var got map[string]interface{}
+		// 	want := map[string]interface{}{
+		// 		"T": true,
+		// 		"F": false,
+		// 	}
 		// 	err := MsgPackToJson(data, &got)
-		// 	t.Run("fixarray: 6", func(t *testing.T) {
+		// 	t.Run("slice: 2", func(t *testing.T) {
 		// 		if err != nil {
 		// 			t.Fatalf("MsgPackToJson got err %s", err.Error())
 		// 		}
@@ -746,22 +886,6 @@ func TestArray(t *testing.T) {
 		// 		}
 		// 	})
 		// },
-		func() {
-			data := []byte{0xDC, 0x00, 0x10, 0xC2, 0xE0, 0xA1, 0x7A, 0xCB, 0x40, 0xC8, 0x1C, 0xC5, 0xC8, 0xA7, 0x12, 0x47, 0xA1, 0x7A, 0xA1,
-				0x79, 0xA1, 0x77, 0xA1, 0x78, 0xA1, 0x66, 0xA1, 0x74, 0xC3, 0x7B, 0xA3, 0x61, 0x62, 0x63, 0xA1, 0x61, 0xA1, 0x63, 0xA1, 0x76}
-			var got [16]interface{}
-			want := [16]interface{}{false, int64(-32), "z", float64(12345.545185932087), "z", "y", "w", "x", "f",
-				"t", true, uint64(123), "abc", "a", "c", "v"}
-			err := MsgPackToJson(data, &got)
-			t.Run("array16: 1", func(t *testing.T) {
-				if err != nil {
-					t.Fatalf("MsgPackToJson got err %s", err.Error())
-				}
-				if !reflect.DeepEqual(got, want) {
-					t.Errorf("MsgPackToJson got %v, want %v", got, want)
-				}
-			})
-		},
 	}
 
 	for _, fun := range tests {

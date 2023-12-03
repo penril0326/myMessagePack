@@ -14,7 +14,6 @@ func (d *decoder) decodeString(offset int) (string, int, error) {
 	}
 
 	if d.isFixString(strFamily) {
-		d.getFixStrLen(strFamily)
 		data, next, err := d.readSizeN(next, d.getFixStrLen(strFamily))
 		if err != nil {
 			return "", -1, err
